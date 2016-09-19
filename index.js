@@ -55,9 +55,11 @@ WORKDIR /srv
     }
   }
 
-  for (var i = 0; i < config.orchestration.services.length; i++) {
-    var value = config.orchestration.services[i][environment];
-    dockerfile += "EXPOSE " + value.containerPort + "\n";
+  if (config.orchestration.services != null) {
+    for (var i = 0; i < config.orchestration.services.length; i++) {
+      var value = config.orchestration.services[i][environment];
+      dockerfile += "EXPOSE " + value.containerPort + "\n";
+    }
   }
 
   if (config.orchestration.packageType == 'custom' && config.orchestration.packagePostCommands != null) {
