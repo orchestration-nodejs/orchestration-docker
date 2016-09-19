@@ -199,8 +199,76 @@ function testLocal(config, environment, devPorts, callback) {
   });
 }
 
+function testLocalOpts(config, environment, opts, callback) {
+  var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
+  var containerName = 'orchestration-test-' + config.package.name;
+  var args1 = [
+    'run',
+    '--rm',
+    '--name=' + containerName
+  ];
+  var args2 = [
+    dockerPrefix + config.package.name + ":" + config.package.version
+  ];
+
+  var argsPorts = [];
+  var argsVolumes = [];
+  var argsEnv = [
+    '-e',
+    'NODE_ENV=' + environment
+  ];
+
+  if (opts.ports != null) {
+    for (var source in opts.ports) {
+      if (opts.ports.hasOwnProperty(source)) {
+        argsPorts.push('-p');
+        argsPorts.push(source + ":" + opts.ports[source]);
+      }
+    }
+  }
+
+  if (opts.volumes != null) {
+    for (var source in opts.volumes) {
+      if (opts.volumes.hasOwnProperty(source)) {
+        argsVolumes.push('-v');
+        argsVolumes.push(source + ":" + opts.volumes[source]);
+      }
+    }
+  }
+
+  if (opts.env != null) {
+    for (var source in opts.env) {
+      if (opts.env.hasOwnProperty(source)) {
+        argsEnv.push('-e');
+        argsEnv.push(source + "=" + opts.env[source]);
+      }
+    }
+  }
+
+  var child = spawn(
+    'docker',
+    args1.concat(argsPorts).concat(argsVolumes).concat(argsEnv).concat(args2),
+    {
+      shell: true,
+      detached: true
+    });
+  child.on('exit', (code) => {
+    console.log('Stopping container...');
+    var stopChild = spawn('docker', [ 'stop', containerName ], { shell: true });
+    stopChild.on('exit', (stopCode) => {
+      console.log('Removing container...');
+      var rmChild = spawn('docker', [ 'rm', containerName ], { shell: true });
+      rmChild.on('exit', (rmCode) => {
+        callback();
+      });      
+    });
+  });
+}
+
+
 module.exports = {
   build: build,
   push: push,
   testLocal: testLocal,
+  testLocalOpts: testLocalOpts
 }
