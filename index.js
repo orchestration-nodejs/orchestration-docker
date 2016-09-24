@@ -3,6 +3,12 @@ var spawn = require('child_process').spawn;
 var fs = require('fs');
 
 function getDockerfile(config, environment) {
+  if (config.orchestration.packageType == 'custom-dockerfile') {
+    var file = fs.readFileSync(config.orchestration.packageDockerFile, 'utf8');
+    file = file.replace(/\$ENVIRONMENT/, environment);
+    return file;
+  }
+
   if (config.orchestration.packageType == null || config.orchestration.packageType == 'nodejs') {
     var dockerfile = `
 FROM node:latest
