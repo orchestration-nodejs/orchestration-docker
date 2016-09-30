@@ -3,6 +3,8 @@ var spawn = require('child_process').spawn;
 var fs = require('fs');
 
 function getDockerfile(config, environment) {
+  var version = config.dockerImageVersion || config.package.version;
+
   if (config.orchestration.packageType == 'custom-dockerfile') {
     var file = fs.readFileSync(config.orchestration.packageDockerFile, 'utf8');
     file = file.replace(/\$ENVIRONMENT/, environment);
@@ -25,8 +27,9 @@ RUN bash -c 'ssh-keyscan -H ` + config.orchestration.privateRepoHosts[i] + ` >> 
       }
     }
     dockerfile += `
+RUN echo "` + version + `" > /docker-image-version.txt
 ADD package.json.versionless /srv/package.json
-RUN npm install`
+RUN npm install --production`
     if (config.orchestration.privateRepoKey != null) {
       dockerfile += `
 RUN rm /root/.ssh/id_rsa`
@@ -104,6 +107,8 @@ function cleanupFile(file, err, callback) {
 }
 
 function build(config, environment, callback) {
+  var version = config.dockerImageVersion || config.package.version;
+
   var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
 
   fs.writeFile('Dockerfile.tmp', getDockerfile(config, environment), (err) => {
@@ -124,7 +129,7 @@ function build(config, environment, callback) {
         [
           'build',
           '-t',
-          dockerPrefix + config.package.name + ":" + config.package.version,
+          dockerPrefix + config.package.name + ":" + version,
           '-f',
           'Dockerfile.tmp',
           '.'
@@ -136,6 +141,8 @@ function build(config, environment, callback) {
 }
 
 function push(config, environment, callback) {
+  var version = config.dockerImageVersion || config.package.version;
+
   var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
 
   if (dockerPrefix == "" || dockerPrefix[dockerPrefix.length - 1] != "/") {
@@ -150,7 +157,7 @@ function push(config, environment, callback) {
         '--project=' + config.cluster.environments[environment].project,
         'docker',
         'push',
-        dockerPrefix + config.package.name + ":" + config.package.version,
+        dockerPrefix + config.package.name + ":" + version,
       ],
       callback
     );
@@ -159,7 +166,7 @@ function push(config, environment, callback) {
       'docker',
       [
         'push',
-        dockerPrefix + config.package.name + ":" + config.package.version,
+        dockerPrefix + config.package.name + ":" + version,
       ],
       callback
     );
@@ -167,6 +174,8 @@ function push(config, environment, callback) {
 }
 
 function testLocal(config, environment, devPorts, callback) {
+  var version = config.dockerImageVersion || config.package.version;
+
   var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
   var containerName = 'orchestration-test-' + config.package.name;
   var args1 = [
@@ -175,7 +184,7 @@ function testLocal(config, environment, devPorts, callback) {
     '--name=' + containerName
   ];
   var args2 = [
-    dockerPrefix + config.package.name + ":" + config.package.version
+    dockerPrefix + config.package.name + ":" + version
   ];
   var argsPorts = [];
   for (var source in devPorts) {
@@ -208,6 +217,8 @@ function testLocal(config, environment, devPorts, callback) {
 }
 
 function testLocalOpts(config, environment, opts, callback) {
+  var version = config.dockerImageVersion || config.package.version;
+
   var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
   var containerName = 'orchestration-test-' + config.package.name;
   var args1 = [
@@ -216,7 +227,7 @@ function testLocalOpts(config, environment, opts, callback) {
     '--name=' + containerName
   ];
   var args2 = [
-    dockerPrefix + config.package.name + ":" + config.package.version
+    dockerPrefix + config.package.name + ":" + version
   ];
 
   var argsPorts = [];
