@@ -27,7 +27,6 @@ RUN bash -c 'ssh-keyscan -H ` + config.orchestration.privateRepoHosts[i] + ` >> 
       }
     }
     dockerfile += `
-RUN echo "` + version + `" > /docker-image-version.txt
 ADD package.json.versionless /srv/package.json
 RUN npm install --production`
     if (config.orchestration.privateRepoKey != null) {
@@ -76,6 +75,8 @@ WORKDIR /srv
       dockerfile += "RUN " + config.orchestration.packagePostCommands[i] + "\n";
     }
   }
+
+  dockerfile += "RUN echo \"" + version + "\" > /docker-image-version.txt\n"
 
   if (config.orchestration.packageType == null || config.orchestration.packageType == 'nodejs') {
     dockerfile += "CMD NODE_ENV=" + environment + " node " + config.package.main;
