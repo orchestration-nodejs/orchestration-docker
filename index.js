@@ -157,6 +157,7 @@ function push(config, environment, callback) {
       [
         '--project=' + config.cluster.environments[environment].project,
         'docker',
+        '--',
         'push',
         dockerPrefix + config.package.name + ":" + version,
       ],
