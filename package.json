@@ -1,6 +1,6 @@
 {
   "name": "orchestration-docker",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Build, test and deploy Docker images from Gulp.",
   "main": "index.js",
   "scripts": {

@@ -318,13 +318,12 @@ npm install --production
               return;
             }
 
-            if (!buffer.startsWith('sha256:')) {
-              callback(new Error('Unexpected output from docker commit: ' + buffer));
-              return;
+            if (buffer.startsWith('sha256:')) {
+              newImageId = buffer.substr(7, buffer.length - 7).trim();
+            } else {
+              newImageId = buffer.trim();
             }
-
-            newImageId = buffer.substr(7, buffer.length - 7).trim();
-
+            
             callback();
           });
         });
