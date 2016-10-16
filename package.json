@@ -1,6 +1,6 @@
 {
   "name": "orchestration-docker",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "Build, test and deploy Docker images from Gulp.",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,11 @@
   },
   "homepage": "https://github.com/orchestration-nodejs/orchestration-docker#readme",
   "dependencies": {
-    "orchestration-util-process": "0.0.1"
+    "async": "^2.1.1",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "orchestration-util-process": "0.0.1",
+    "rimraf": "^2.5.4",
+    "tar.gz": "^1.0.5"
   }
 }
