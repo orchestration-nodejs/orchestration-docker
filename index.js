@@ -140,9 +140,13 @@ function push(config, environment, callback) {
 
   var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
 
-  if (dockerPrefix == "" || dockerPrefix[dockerPrefix.length - 1] != "/") {
-    callback(new Error("Docker prefix in cluster does not end with a slash, refusing to push to potentially public location!"));
-    return;
+  var trustDockerImagePrefix = config.cluster.environment[environment].trustDockerImagePrefix;
+
+  if (dockerPrefix == "" || !trustDockerImagePrefix) {
+    if (dockerPrefix == "" || dockerPrefix[dockerPrefix.length - 1] != "/") {
+      callback(new Error("Docker prefix in cluster does not end with a slash, refusing to push to potentially public location!"));
+      return;
+    }
   }
 
   if (config.cluster.type == "google-cloud-kubernetes") {
