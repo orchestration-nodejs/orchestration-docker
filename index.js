@@ -140,7 +140,7 @@ function push(config, environment, callback) {
 
   var dockerPrefix = config.cluster.environments[environment].dockerImagePrefix;
 
-  var trustDockerImagePrefix = config.cluster.environment[environment].trustDockerImagePrefix;
+  var trustDockerImagePrefix = config.cluster.environments[environment].trustDockerImagePrefix;
 
   if (dockerPrefix == "" || !trustDockerImagePrefix) {
     if (dockerPrefix == "" || dockerPrefix[dockerPrefix.length - 1] != "/") {
