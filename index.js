@@ -13,9 +13,14 @@ function getDockerfile(config, environment) {
     return file;
   }
 
+  var nodeVersion = 'boron';
+  if (config.orchestration.nodeVersion != undefined) {
+    nodeVersion = config.orchestration.nodeVersion;
+  }
+
   if (config.orchestration.packageType == null || config.orchestration.packageType == 'nodejs') {
     var dockerfile = `
-FROM node:latest
+FROM node:` + nodeVersion + `
 WORKDIR /srv`
     if (config.orchestration.privateRepoKey != null) {
       dockerfile += `
