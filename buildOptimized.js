@@ -233,11 +233,16 @@ npm install --production
       name + ':root'
     ],
     function(callback) {
+      var nodeVersion = 'boron';
+      if (config.orchestration.nodeVersion != undefined) {
+        nodeVersion = config.orchestration.nodeVersion;
+      }
+
       runProcessAndCapture(
         'docker',
         [
           'create',
-          'node:latest'
+          'node:' + nodeVersion
         ],
         (buffer, err) => {
           if (err) {
