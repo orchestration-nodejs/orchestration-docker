@@ -111,6 +111,11 @@ npm install --production
           return;
         }
 
+        var nodeVersion = 'boron';
+        if (config.orchestration.nodeVersion != undefined) {
+          nodeVersion = config.orchestration.nodeVersion;
+        }
+
         runProcessWithOutput(
         'docker',
           [
@@ -122,7 +127,7 @@ npm install --production
             'NODE_ENV=production',
             '-v',
             path.join(process.cwd(), baseDir, 'cache') + ":/prep",
-            'node:latest',
+            'node:' + nodeVersion,
             'bash',
             '/prep/prepare.sh'
           ],
